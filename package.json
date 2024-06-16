@@ -1,0 +1,16 @@
+{
+  "name": "web_crawler",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "A web crawler built in JS",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Asad Mahmood",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
