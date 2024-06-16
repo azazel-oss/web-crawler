@@ -1,4 +1,5 @@
 import { crawlPage } from "./crawl.js";
+import { printReport } from "./report.js";
 
 function main() {
   const args = process.argv;
@@ -15,7 +16,7 @@ function main() {
     console.log(args[2]);
   }
 
-  crawlPage(args[2]).then((res) => console.log(res));
+  crawlPage(args[2]).then((res) => printReport(res));
 }
 
 main();

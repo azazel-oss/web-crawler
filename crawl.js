@@ -31,7 +31,6 @@ function getURLsFromHTML(document, baseUrl) {
 
 async function fetchHtmlFromUrl(url) {
   const response = await fetch(url);
-
   try {
     if (response.status >= 400) {
       throw new Error("The page is not accessible at the moment");
