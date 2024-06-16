@@ -1,3 +1,5 @@
+import { crawlPage } from "./crawl.js";
+
 function main() {
   const args = process.argv;
 
@@ -12,6 +14,8 @@ function main() {
   if (args.length === 3) {
     console.log(args[2]);
   }
+
+  crawlPage(args[2]).then((res) => console.log(res));
 }
 
 main();

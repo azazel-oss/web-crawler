@@ -1,7 +1,12 @@
 import { JSDOM } from "jsdom";
-function normalizeURL(endpoint) {
-  const url = new URL(endpoint);
-  return (url.hostname + url.pathname).replace(/\/$/, "");
+
+function normalizeURL(url) {
+  const urlObj = new URL(url);
+  let fullPath = `${urlObj.host}${urlObj.pathname}`;
+  if (fullPath.slice(-1) === "/") {
+    fullPath = fullPath.slice(0, -1);
+  }
+  return fullPath;
 }
 
 function getURLsFromHTML(document, baseUrl) {
@@ -9,11 +14,6 @@ function getURLsFromHTML(document, baseUrl) {
   const anchors = htmlDocument.window.document.querySelectorAll("a");
   const urls = [];
   for (let anchor of anchors) {
-    // if (anchor.href.startsWith("http") || anchor.href.startsWith("www")) {
-    //   urls.push(anchor.href);
-    // } else {
-    //   urls.push(baseUrl + anchor.href);
-    // }
     if (anchor.hasAttribute("href")) {
       let href = anchor.getAttribute("href");
 
@@ -29,4 +29,41 @@ function getURLsFromHTML(document, baseUrl) {
   return urls;
 }
 
-export { normalizeURL, getURLsFromHTML };
+async function fetchHtmlFromUrl(url) {
+  const response = await fetch(url);
+
+  try {
+    if (response.status >= 400) {
+      throw new Error("The page is not accessible at the moment");
+    }
+    if (!response.headers.get("content-type").includes("text/html")) {
+      console.error(url);
+      throw new Error("This is not an HTML page");
+    }
+    const text = await response.text();
+    return text;
+  } catch (err) {
+    console.error(err);
+    return "";
+  }
+}
+
+async function crawlPage(baseUrl, currentUrl = baseUrl, pages = {}) {
+  if (new URL(baseUrl).hostname !== new URL(currentUrl).hostname) {
+    return pages;
+  }
+  let normalizedCurrentUrl = normalizeURL(currentUrl);
+  if (pages[normalizedCurrentUrl]) {
+    pages[normalizedCurrentUrl] += 1;
+    return pages;
+  } else {
+    pages[normalizedCurrentUrl] = 1;
+  }
+  const text = await fetchHtmlFromUrl(currentUrl);
+  const urls = getURLsFromHTML(text, baseUrl);
+  for (let url of urls) {
+    pages = await crawlPage(baseUrl, url, pages);
+  }
+  return pages;
+}
+export { normalizeURL, getURLsFromHTML, crawlPage };
