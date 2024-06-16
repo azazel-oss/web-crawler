@@ -1,7 +1,17 @@
-function normalizeURL(url) {
-  const regex = /https?:\/\/(?<name>[a-zA-z.\/]*[^\/])\/?$/;
-  const { name } = regex.exec(url).groups;
-  return name;
+function main() {
+  const args = process.argv;
+
+  if (args.length > 3) {
+    console.error("The tool accepts only one argument");
+    process.exit(1);
+  }
+  if (args.length < 3) {
+    console.error("The tool needs one argument to run");
+    process.exit(1);
+  }
+  if (args.length === 3) {
+    console.log(args[2]);
+  }
 }
 
-console.log(normalizeURL("https://blog.boot.dev/path/"));
+main();
